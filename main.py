@@ -106,4 +106,4 @@ def remove_cedrics_traces(frontmatter, content):
 
 if __name__ == "__main__":
     my_vault = Vault(os.getcwd())
-    my_vault.preview_change(replace_status_with_done)
+    my_vault.preview_change(remove_cedrics_traces)
