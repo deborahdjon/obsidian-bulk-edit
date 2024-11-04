@@ -139,27 +139,34 @@ def clean_up_asset_folder(vault_folder: str, asset_folder: str):
             for file in files:
                 file_path = os.path.join(root, file)
                 # Skip hidden items like .obsidian and .DSfolders
-                hidden_item = re.search(r'/\.[^/\.]+', file_path)
+                hidden_item = re.search(r'/\.[^/]*', file_path)
                 zotero_connector_file = "ZoteroLibrary.json" in file_path
-                if not hidden_item or not zotero_connector_file:  
-                    # Gather non-.md files for moving
-                    if not file_path.endswith('.md') and not "/08_Asset"  in file_path and not "04_Project"  in file_path:
+                is_md_file = file_path.endswith('.md') 
+                is_project_file = "04_Project" in file_path
+                is_already_in_asset_folder = "08_Asset" in file_path
+
+                if not (hidden_item 
+                        or zotero_connector_file 
+                        or is_md_file 
+                        or is_project_file 
+                        or is_already_in_asset_folder):
+                        # Gather non-.md files for moving
                         logger.debug(file_path)
                         assets_to_move.append(file_path)
                     
-                    # Only process .md files for asset reference extraction
-                    elif file.endswith('.md'):
-                        with open(file_path, 'r', encoding='utf-8') as f:
-                            content = f.read()
-                            # Find all references to assets in [[]] brackets
-                            references = re.findall(r'\[\[([^\[\]]+?)\]\]', content)
-                            # Process each reference to remove alias and check for non-markdown files
-                            for ref in references:
-                                # Remove alias if present (everything after |)
-                                actual_ref = ref.split('|')[0]
-                                # Check if the reference has an extension and is not .md
-                                if '.' in actual_ref and not actual_ref.endswith('.md'):
-                                    assets_in_vault.add(actual_ref)
+                # Only process .md files for asset reference extraction
+                elif file.endswith('.md'):
+                    with open(file_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        # Find all references to assets in [[]] brackets
+                        references = re.findall(r'\[\[([^\[\]]+?)\]\]', content)
+                        # Process each reference to remove alias and check for non-markdown files
+                        for ref in references:
+                            # Remove alias if present (everything after |)
+                            actual_ref = ref.split('|')[0]
+                            # Check if the reference has an extension and is not .md
+                            if '.' in actual_ref and not actual_ref.endswith('.md'):
+                                assets_in_vault.add(actual_ref)
 
     # Gather assets in markdown references and list of all non-md files to move
     gather_assets_and_find_files_to_move(vault_folder)
