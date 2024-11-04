@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from tkinter import Tk, messagebox
+from tkinter import Tk, messagebox, PhotoImage
 import os
 import re
 import shutil
@@ -124,9 +124,20 @@ def confirm_action(message):
     return messagebox.askyesno("Confirmation", message)
 
 
+
+
+
 def clean_up_asset_folder(vault_folder: str, asset_folder: str):
     root = Tk()
     root.withdraw()  # Hide the main window as we only want dialogs
+    # Keep the popup window on top of all windows
+    root.attributes("-topmost", True)
+    # Set the custom icon if provided
+
+    icon_path = "clean_up_vault/src/icons/alarm.png"
+    root.iconphoto(False, PhotoImage(file=icon_path))
+
+
 
     # Set to store asset references found in markdown files
     assets_in_vault = set()
@@ -194,7 +205,7 @@ def clean_up_asset_folder(vault_folder: str, asset_folder: str):
     logger.info(f"Number of missing assets in vault: {len(missing)}")
     logger.info(f"Obsolete assets in asset folder: {obsolete_count} / {total_assets} ({percentage:.2f}%)")
     
-    if confirm_action(f"You are about to delete {obsolete_count} obsolete assets out of a total of {total_assets} ({percentage:.2f}%) assets in your vault. Do you want to proceed?"):
+    if confirm_action(f"You are about to delete {obsolete_count} obsolete assets out of a total of {total_assets} ({percentage:.0f}%) assets in your vault. \nDo you want to proceed?"):
         # Move assets not in asset folder to the asset folder
         for asset_path in assets_to_move:
             asset_name = os.path.basename(asset_path)
