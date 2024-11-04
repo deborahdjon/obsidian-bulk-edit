@@ -5,7 +5,7 @@ from os import path
 # TODO: is there some way to make sure that the change method has the right shape
 # and arguments? Maybe by using classes?
 
-class Vault():
+class VaultFolder():
     def __init__(self, root_path):
         self.ROOT_PATH = root_path
 
@@ -25,11 +25,11 @@ class Vault():
                     with open(file_path, 'r', encoding='utf-8') as file:
                         content = file.readlines()
 
-                    frontmatter, content = Vault._extract_frontmatter(content, filename)
+                    frontmatter, content = VaultFolder._extract_frontmatter(content, filename)
                     new_frontmatter, new_content = change(frontmatter, content)
 
                     if save:
-                        Vault._save_file(file_path, new_frontmatter, new_content)
+                        VaultFolder._save_file(file_path, new_frontmatter, new_content)
                     else:
                         try:
                             width, _ = os.get_terminal_size()
@@ -46,7 +46,7 @@ class Vault():
                         print(title)
                         print("*" * width)
 
-                        Vault._print_preview(new_frontmatter, new_content)
+                        VaultFolder._print_preview(new_frontmatter, new_content)
 
     def _extract_frontmatter(content, filename):
         if not content:
@@ -79,8 +79,6 @@ class Vault():
         else:
             content_lines = content
             frontmatter = {}
-
-
         return (frontmatter, content_lines)
 
     def _save_file(file_path, frontmatter, content):
@@ -96,15 +94,3 @@ class Vault():
         print(yaml.dump(frontmatter, default_flow_style=False), end='')
         print('---')
         print(''.join(content))
-
-
-def remove_cedrics_traces(frontmatter, content):
-    if "authors" in frontmatter and "cedric" in frontmatter["authors"]:
-        frontmatter["authors"].remove("cedric")
-    
-    return (frontmatter, content)
-
-if __name__ == "__main__":
-    VAULT_PATH = os.getcwd()
-    my_vault = Vault(VAULT_PATH)
-    my_vault.make_change(remove_cedrics_traces)
