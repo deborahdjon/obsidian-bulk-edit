@@ -137,8 +137,6 @@ def clean_up_asset_folder(vault_folder: str, asset_folder: str):
     icon_path = "clean_up_vault/src/icons/alarm.png"
     root.iconphoto(False, PhotoImage(file=icon_path))
 
-
-
     # Set to store asset references found in markdown files
     assets_in_vault = set()
     assets_to_move = []  # List to store paths of all non-.md files that need to be moved to the asset folder
@@ -150,11 +148,18 @@ def clean_up_asset_folder(vault_folder: str, asset_folder: str):
             for file in files:
                 file_path = os.path.join(root, file)
                 # Skip hidden items like .obsidian and .DSfolders
-                hidden_item = re.search(r'/\.[^/]*', file_path)
+                hidden_item = re.search(r'/\.[^/\.]+', file_path) 
                 zotero_connector_file = "ZoteroLibrary.json" in file_path
                 is_md_file = file_path.endswith('.md') 
                 is_project_file = "04_Project" in file_path
                 is_already_in_asset_folder = "08_Asset" in file_path
+
+                logger.debug("\n\n" + file_path)
+                logger.debug(hidden_item )
+                logger.debug(zotero_connector_file )
+                logger.debug(is_md_file )
+                logger.debug(is_project_file )
+                logger.debug(is_already_in_asset_folder )
 
                 if not (hidden_item 
                         or zotero_connector_file 
